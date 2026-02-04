@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: beyond-mumbai-service
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: beyond-mumbai-app
   ports:

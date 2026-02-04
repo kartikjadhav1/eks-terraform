@@ -13,7 +13,7 @@ spec:
         app: beyond-mumbai-app
     spec:
       containers:
-      - name: beyond-mumbai-app
+      - name: web-server
         image: 173378532619.dkr.ecr.us-east-1.amazonaws.com/beyond-mumbai:latest
         ports:
         - containerPort: 80

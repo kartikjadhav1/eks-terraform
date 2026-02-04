@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        AWS_ACCOUNT_ID = "173378532619" // Your actual account ID
+        AWS_ACCOUNT_ID = "173378532619"
         AWS_REGION     = "us-east-1"
         IMAGE_REPO     = "beyond-mumbai"
         IMAGE_TAG      = "${env.BUILD_NUMBER}"
@@ -15,11 +15,11 @@ pipeline {
                         string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
                         string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')
                     ]) {
-                        sh """
+                        sh '''
                             export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
                             export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
                             aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
-                        """
+                        '''
                     }
                 }
             }
@@ -34,11 +34,11 @@ pipeline {
                         string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
                         string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')
                     ]) {
-                        sh """
+                        sh '''
                             export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
                             export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
                             docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_REPO}:${IMAGE_TAG}
-                        """
+                        '''
                     }
                 }
             }
@@ -50,10 +50,11 @@ pipeline {
                         string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
                         string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')
                     ]) {
-                        sh """
+                        sh '''
                             export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
                             export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-                            aws eks update-kubeconfig --name ${CLUSTER_NAME} --region ${AWS_REGION}# Check if deployment exists
+                            aws eks update-kubeconfig --name ${CLUSTER_NAME} --region ${AWS_REGION}
+                            
                             if kubectl get deployment beyond-mumbai-app 2>/dev/null; then
                                 echo "Deployment exists, updating image..."
                                 kubectl set image deployment/beyond-mumbai-app web-server=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_REPO}:${IMAGE_TAG}
@@ -61,12 +62,10 @@ pipeline {
                                 echo "Deployment does not exist, creating it..."
                                 kubectl apply -f k8s/deploy.yaml
                                 kubectl apply -f k8s/service.yaml
-                                # Wait a bit then update the image
                                 sleep 5
                                 kubectl set image deployment/beyond-mumbai-app web-server=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_REPO}:${IMAGE_TAG}
                             fi
                             
-                            # Wait for rollout to complete
                             kubectl rollout status deployment/beyond-mumbai-app
                         '''
                     }

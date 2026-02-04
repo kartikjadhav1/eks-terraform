@@ -5,7 +5,7 @@ pipeline {
         AWS_REGION     = "us-east-1"
         IMAGE_REPO     = "beyond-mumbai"
         IMAGE_TAG      = "${env.BUILD_NUMBER}"
-        CLUSTER_NAME   = "dev-demo"
+        CLUSTER_NAME   = "my-eks-cluster"
     }
     stages {
         stage('Login to ECR') {

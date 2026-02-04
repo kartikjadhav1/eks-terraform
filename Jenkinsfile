@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        AWS_ACCOUNT_ID = "123456789012" // Your Account ID
+        AWS_ACCOUNT_ID = "173378532619" // Your Account ID
         AWS_REGION     = "us-east-1"
         IMAGE_REPO     = "beyond-mumbai"
         IMAGE_TAG      = "${env.BUILD_NUMBER}" // Uses Jenkins build number as tag
